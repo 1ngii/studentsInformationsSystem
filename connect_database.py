@@ -1,6 +1,8 @@
 from threading import Condition
 
 import mysql.connector
+from PyQt6.QtWidgets import QMessageBox
+
 
 class ConnectDatabase:
     def __init__(self):
@@ -25,14 +27,14 @@ class ConnectDatabase:
         # Create a cursor for executing SQL queries
         self.cursor = self.con.cursor(dictionary=True)
 
-    def add_info(self, student_id, first_name, last_name, state, city, email):
+    def add_info(self, studentId, first_name, last_name, state, city, email):
         #connect to the database
         self.connect_db()
 
         #construct SQL query for adding information
         sql = f"""
-            INSERT INTO students_info (studendId, firstName, lastName, state, city, emailAdress)
-                VALUES ({student_id}, '{first_name}', '{last_name}', '{state}', '{city}', '{email}');
+            INSERT INTO table1 (studendId, firstName, lastName, state, city, emailAddress)
+                VALUES ({studentId}, '{first_name}', '{last_name}', '{state}', '{city}', '{email}');
         """
 
         try:
@@ -49,15 +51,15 @@ class ConnectDatabase:
             #close the database connection
             self.con.close()
 
-    def update_info(self, student_id, first_name, last_name, state, city, email):
+    def update_info(self, studentId, first_name, last_name, state, city, email):
         #connect to the database
         self.connect.db()
 
         #construct SQL query for updating information
         sql = f"""
-            UPDATE students_info
+            UPDATE table1
                 SET firstName='{first_name}', lastName='{last_name}', state='{state}', city='{city}', emaiAdress='{email}'
-                WHERE studentId={student_id};
+                WHERE studentId={studentId};
         """
 
         try:
@@ -80,7 +82,7 @@ class ConnectDatabase:
 
         # Construct SQL query for deleting inform
         sql= f"""
-            DELETE FROM students_info WHERE studentId={studentId};
+            DELETE FROM table1 WHERE studentId={studentId};
         """
 
         try:
@@ -97,13 +99,13 @@ class ConnectDatabase:
             #Close the database connection
             self.con.close()
 
-    def search_infop(self, student_id=None, first_name=None, last_name=None, state=None, city=None, email=None):
+    def search_info(self, studentId=None, first_name=None, last_name=None, state=None, city=None, email=None):
         # Connect to the database
         self.connect_db()
 
         condition = ""
-        if student_id:
-            condition += f"studentId LIKE '%{student_id}%'"
+        if studentId:
+            condition += f"studentId LIKE '%{studentId}%'"
         else:
             if first_name:
                 if condition:
@@ -131,24 +133,24 @@ class ConnectDatabase:
 
             if email:
                 if condition:
-                    condition += f" and emailAdress LIKE '%{email}%'"
+                    condition += f" and emailAddress LIKE '%{email}%'"
                 else:
-                    condition += f"emailAdress LIKE '%{email}%'"
+                    condition += f"emailAddress LIKE '%{email}%'"
 
         if condition:
             # construct SQL query for searching information with conditions
             sql = f"""
-                    SELECT * FROM students_info WHERE {condition};
+                    SELECT * FROM table1 WHERE {condition};
             """
         else:
             # construct SQL query for searching all information
             sql = f"""
-                SELECT * FROM students_info;
+                SELECT * FROM table1;
             """
 
         try:
             # Execute the SQL query for searching information
-            self.cursor.execture(sql)
+            self.cursor.execute(sql)
             result = self.cursor.fetchall()
             return result
 
@@ -165,7 +167,7 @@ class ConnectDatabase:
 
         #construct SQL query for deleting information
         sql= f"""
-            SELECT state FROM students_info GROUP BY state;
+            SELECT state FROM table1 GROUP BY state;
         """
 
         try:
@@ -189,7 +191,7 @@ class ConnectDatabase:
 
         #construct SQL queryt for deleting information
         sql = f"""
-            SELECTION city FROM students_info GROUP BY city;    
+            SELECT city FROM table1 GROUP BY city;    
         """
 
         try:
