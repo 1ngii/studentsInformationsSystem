@@ -39,6 +39,9 @@ class MainWindow(QWidget):
         self.clear_btn = self.ui.clear_btn
         self.delete_btn = self.ui.delete_btn
 
+        self.state.setEditable(1)
+        self.city.setEditable(1)
+
         self.result_table = self.ui.tableWidget
         self.result_table.setSortingEnabled(False)
         self.buttons_list = self.ui.function_frame.findChildren(QPushButton)
@@ -65,8 +68,8 @@ class MainWindow(QWidget):
 
         student_info = self.get_student_info()
 
-        if student_info["studentId"] and student_info["first_name"]:
-            check_result = self.check_student_id(student_id=int(student_info["studentId"]))
+        if student_info["student_id"] and student_info["firstName"]:
+            check_result = self.check_student_id(student_id=int(student_info["student_id"]))
 
             if check_result:
                 QMessageBox.information(self, "Warning", "Please input a new student ID",
@@ -74,12 +77,12 @@ class MainWindow(QWidget):
                 self.enable_buttons()
                 return
 
-            add_result = self.db.add_info(student_id = int(student_info["studentId"]),
-                                          first_name=student_info["first_name"],
-                                          last_name=student_info["last_name"],
-                                          email=student_info["emailAddress"],
+            add_result = self.db.add_info(studentId = int(student_info["student_id"]),
+                                          first_name=student_info["firstName"],
+                                          last_name=student_info["lastName"],
                                           state=student_info["state"],
-                                          city=student_info["city"],)
+                                          city=student_info["city"],
+                                          email=student_info["emailAddress"])
 
             if add_result:
                 QMessageBox.information(self, "Warning", f"Add fail: {add_result}, Please try again.",
@@ -96,14 +99,14 @@ class MainWindow(QWidget):
         # Function to update student information
         new_student_info = self.get_student_info()
 
-        if new_student_info["studentId"]:
+        if new_student_info["student_id"]:
             update_result = self.db.update_info(
-                student_id=new_student_info["studentId"],
-                first_name=new_student_info["first_name"],
-                last_name=new_student_info["last_name"],
-                email=new_student_info["emailAddress"],
+                studentId=new_student_info["student_id"],
+                first_name=new_student_info["firstName"],
+                last_name=new_student_info["lastName"],
                 state=new_student_info["state"],
                 city=new_student_info["city"],
+                email=new_student_info["emailAddress"]
             )
 
             if update_result:
@@ -127,18 +130,19 @@ class MainWindow(QWidget):
             student_id = self.result_table.item(select_row, 0).text().strip()
             first_name = self.result_table.item(select_row, 1).text().strip()
             last_name = self.result_table.item(select_row, 2).text().strip()
-            email = self.result_table.item(select_row, 3).text().strip()
-            state = self.result_table.item(select_row, 4).text().strip()
-            city = self.result_table.item(select_row, 5).text().strip()
+            email = self.result_table.item(select_row, 5).text().strip()
+            state = self.result_table.item(select_row, 3).text().strip()
+            city = self.result_table.item(select_row, 4).text().strip()
 
             self.student_id.setText(student_id)
             self.first_name.setText(first_name)
             self.last_name.setText(last_name)
             self.email.setText(email)
-            self.state.setText(state)
-            self.city.setText(city)
+            self.state.setCurrentText(state)
+            self.city.setCurrentText(city)
 
         else:
+
             QMessageBox.information(self, "Warning", "Please select on student information",
                                     QMessageBox.StandardButton.Ok)
 
@@ -157,12 +161,12 @@ class MainWindow(QWidget):
         self.update_state_city()
         student_info = self.get_student_info()
         student_result = self.db.search_info(
-            studentId=student_info["studentId"],
-            first_name=student_info["first_name"],
-            last_name=student_info["last_name"],
-            email=student_info["emailAddress"],
+            studentId=student_info["student_id"],
+            first_name=student_info["firstName"],
+            last_name=student_info["lastName"],
             state=student_info["state"],
-            city=student_info["city"]
+            city=student_info["city"],
+            email=student_info["emailAddress"]
         )
 
         self.show_data(student_result)
@@ -208,11 +212,11 @@ class MainWindow(QWidget):
             for row, info in enumerate(result):
                 info_list =[
                     info["studentId"],
-                    info["first_name"],
-                    info["last_name"],
-                    info["emailAddress"],
+                    info["firstName"],
+                    info["lastName"],
                     info["state"],
-                    info["city"]
+                    info["city"],
+                    info["emailAddress"],
                 ]
 
                 for column, item in enumerate(info_list):
@@ -233,19 +237,19 @@ class MainWindow(QWidget):
         city = self.city.currentText().strip()
 
         student_info = {
-            "studentId": student_id,
-            "first_name": first_name,
-            "last_name": last_name,
-            "emailAddress": email,
+            "student_id": student_id,
+            "firstName": first_name,
+            "lastName": last_name,
             "state": state,
             "city": city,
+            "emailAddress": email,
         }
 
         return student_info
 
     def check_student_id(self, student_id):
         #Function to check if a student ID already exists
-        result = self.db.search_info(student_id=student_id)
+        result = self.db.search_info(studentId=student_id)
         return result
 
     def update_state_city(self):
@@ -268,10 +272,10 @@ class MainWindow(QWidget):
                 if v != "":
                     city_list.append(v)
 
-        if len(state_list) > 1:
+        if len(state_list) > 0:
             self.state.addItems(state_list)
 
-        if len(city_list) > 1:
+        if len(city_list) > 0:
             self.city.addItems(city_list)
 #Application entry
 if __name__ == '__main__':

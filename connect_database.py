@@ -33,7 +33,7 @@ class ConnectDatabase:
 
         #construct SQL query for adding information
         sql = f"""
-            INSERT INTO table1 (studendId, firstName, lastName, state, city, emailAddress)
+            INSERT INTO table1 (studentId, firstName, lastName, state, city, emailAddress)
                 VALUES ({studentId}, '{first_name}', '{last_name}', '{state}', '{city}', '{email}');
         """
 
@@ -53,12 +53,12 @@ class ConnectDatabase:
 
     def update_info(self, studentId, first_name, last_name, state, city, email):
         #connect to the database
-        self.connect.db()
+        self.connect_db()
 
         #construct SQL query for updating information
         sql = f"""
             UPDATE table1
-                SET firstName='{first_name}', lastName='{last_name}', state='{state}', city='{city}', emaiAdress='{email}'
+                SET firstName='{first_name}', lastName='{last_name}', state='{state}', city='{city}', emailAddress='{email}'
                 WHERE studentId={studentId};
         """
 
@@ -88,7 +88,7 @@ class ConnectDatabase:
         try:
             # Execute the SQL query for deleting information
             self.cursor.execute(sql)
-            sql.con.commit()
+            self.con.commit()
 
         except Exception as E:
             #Rollback the transaction in case of an error
